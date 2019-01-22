@@ -7,6 +7,12 @@ import Devtools from "mobx-react-devtools";
 class Temperature {
   @observable unit = "C";
   @observable temperatureCelsius = 25;
+
+  constructor(unit, temperature) {
+    this.unit = unit;
+    this.temperatureCelsius = temperature;
+  }
+
   @computed
   get temperatureKelvin() {
     console.log("calculating temperatureKelvin ++++++++++++++");
@@ -44,19 +50,29 @@ class Temperature {
     this.setUnit(unit);
     this.setCelsius(degrees);
   }
-}
-const t = new Temperature();
 
+  @action
+  inc() {
+    this.setCelsius(this.temperatureCelsius + 1);
+  }
+}
+const t = new Temperature("C", 100);
+const t1 = new Temperature("K", 100);
+const t2 = new Temperature("F", 100);
 const temps = observable([]);
 temps.push(t);
+temps.push(t1);
+temps.push(t2);
 
 const App = observer(({ temperatures }) => (
   <div>
-    <div>
+    <ul>
       {temps.map(t => (
-        <div key={Math.random()}>{t.temperature}</div>
+        <li key={Math.random()} onClick={() => t.inc()}>
+          {t.temperature}
+        </li>
       ))}
-    </div>
+    </ul>
     <Devtools />
   </div>
 ));
