@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
 import { observer, Provider } from "mobx-react";
-import { observable, computed, action, transaction } from "mobx";
+import { observable, computed, action, transaction, when } from "mobx";
 import Devtools from "mobx-react-devtools";
 
 class Temperature {
@@ -145,6 +145,17 @@ render(
   document.getElementById("root")
 );
 
+function isNice(t) {
+  return t.temperatureCelsius > 500;
+}
+
+when(
+  () => temps.some(isNice),
+  () => {
+    const t = temps.find(isNice);
+    alert("Book now!" + t.location);
+  }
+);
 // transaction(() => {
 //   t.unit = "F";
 //   t.unit = "C";
