@@ -10,19 +10,19 @@ class Temperature {
 
   @computed
   get temperatureKelvin() {
-    console.log("calculating temperatureKelvin");
+    console.log("calculating temperatureKelvin ++++++++++++++");
     return this.temperatureCelsius * (9 / 5) + 32;
   }
 
   @computed
   get temperatureFahrenheit() {
-    console.log("calculating temperatureFahrenheit");
+    console.log("calculating temperatureFahrenheit ----------------");
     return this.temperatureCelsius + 273.15;
   }
 
   @computed
   get temperature() {
-    console.log("calculating temperature");
+    console.log("calculating temperature =========");
     switch (this.unit) {
       case "K":
         return this.temperatureKelvin + " K";
