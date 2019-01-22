@@ -32,15 +32,20 @@ class Temperature {
 }
 const t = new Temperature();
 
-const App = observer(({ temperature }) => (
+const temps = observable([]);
+temps.push(t);
+
+const App = observer(({ temperatures }) => (
   <div>
-    <div>{temperature.temperature}</div>
+    <div>
+      {temperatures.map(t => (
+        <div key={t.id}>{t.temperature}</div>
+      ))}
+    </div>
     <Devtools />
   </div>
 ));
+window.Temperature = Temperature;
+window.temps = temps;
 
-window.t = t;
-
-render(<App temperature={t} />, document.getElementById("root"));
-
-console.log("=========");
+render(<App temperatures={temps} />, document.getElementById("root"));
