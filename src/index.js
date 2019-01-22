@@ -5,14 +5,38 @@ import { observable, computed, action, transaction } from "mobx";
 import Devtools from "mobx-react-devtools";
 
 class Temperature {
+  id = Math.random();
   @observable unit = "C";
   @observable temperatureCelsius = 25;
+  @observable location = "Amsterdam, NL";
+  @observable loading = true;
 
-  constructor(unit, temperature) {
-    this.unit = unit;
-    this.temperatureCelsius = temperature;
+  constructor(location) {
+    this.location = location;
+    this.fetch();
   }
 
+  @action
+  fetch() {
+    window
+      .fetch(
+        `http://api.openweathermap.org/data/2.5/weather?appid=abcdef
+&q=${this.location}`
+      )
+      .then(res => res.json())
+      .then(
+        action(json => {
+          console.log("sewewewewewewe");
+          this.temperatureCelsius = json.main.temp - 273.15;
+          this.loading = false;
+        })
+      )
+      .catch(error => {
+        console.log("========, failed to get weather");
+        this.temperatureCelsius = Math.random() * 1000 - 273.15;
+        this.loading = false;
+      });
+  }
   @computed
   get temperatureKelvin() {
     console.log("calculating temperatureKelvin ++++++++++++++");
@@ -56,13 +80,9 @@ class Temperature {
     this.setCelsius(this.temperatureCelsius + 1);
   }
 }
-const t = new Temperature("C", 100);
-const t1 = new Temperature("K", 100);
-const t2 = new Temperature("F", 100);
+const t = new Temperature("Amsterdam, NL");
+
 const temps = observable([]);
-temps.push(t);
-temps.push(t1);
-temps.push(t2);
 
 @observer
 class TView extends React.Component {
@@ -70,7 +90,34 @@ class TView extends React.Component {
     const t = this.props.termperature;
     return (
       <li key={t.id} onClick={() => t.inc()}>
-        {t.temperature}
+        {t.location} : {t.loading ? "loading..." : t.temperature}
+      </li>
+    );
+  }
+}
+
+@observer
+class TemperatureInput extends React.Component {
+  @observable input = "";
+  @action
+  onChange = e => {
+    e.persist();
+    this.input = e.target.value;
+  };
+
+  @action
+  onSubmit = e => {
+    e.persist();
+    this.props.temperatures.push(new Temperature(this.input));
+    this.input = "";
+  };
+
+  render() {
+    return (
+      <li>
+        Destination:
+        <input onChange={this.onChange} value={this.input} />
+        <button onClick={this.onSubmit}> Add </button>
       </li>
     );
   }
@@ -79,6 +126,7 @@ class TView extends React.Component {
 const App = observer(({ temperatures }) => (
   <div>
     <ul>
+      <TemperatureInput temperatures={temperatures} />
       {temps.map(t => (
         <TView key={t.id} termperature={t} />
       ))}
