@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
 import { observer } from "mobx-react";
-import { observable, computed } from "mobx";
+import { observable, computed, asMap } from "mobx";
 import Devtools from "mobx-react-devtools";
 
 class Temperature {
@@ -38,8 +38,8 @@ temps.push(t);
 const App = observer(({ temperatures }) => (
   <div>
     <div>
-      {temperatures.map(t => (
-        <div key={t.id}>{t.temperature}</div>
+      {temps.map(t => (
+        <div key={Math.random()}>{t.temperature}</div>
       ))}
     </div>
     <Devtools />
