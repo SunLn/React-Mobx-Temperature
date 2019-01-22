@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
-import { observer } from "mobx-react";
+import { observer, Provider } from "mobx-react";
 import { observable, computed, action, transaction } from "mobx";
 import Devtools from "mobx-react-devtools";
 
@@ -96,7 +96,7 @@ class TView extends React.Component {
   }
 }
 
-@observer
+@observer(["temperatures"])
 class TemperatureInput extends React.Component {
   @observable input = "";
   @action
@@ -123,10 +123,10 @@ class TemperatureInput extends React.Component {
   }
 }
 
-const App = observer(({ temperatures }) => (
+const App = observer(["temperatures"], ({ temperatures }) => (
   <div>
     <ul>
-      <TemperatureInput temperatures={temperatures} />
+      <TemperatureInput />
       {temps.map(t => (
         <TView key={t.id} termperature={t} />
       ))}
@@ -138,7 +138,12 @@ window.Temperature = Temperature;
 window.temps = temps;
 window.t = t;
 
-render(<App temperatures={temps} />, document.getElementById("root"));
+render(
+  <Provider temperatures={temps}>
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);
 
 // transaction(() => {
 //   t.unit = "F";
