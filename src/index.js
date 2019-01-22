@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { render } from "react-dom";
+import ReactDOM from "react-dom";
 import { observer, Provider } from "mobx-react";
-import { observable, computed, action, transaction, when } from "mobx";
+import { observable, computed, action, autorun, when } from "mobx";
 import Devtools from "mobx-react-devtools";
 
 class Temperature {
@@ -138,12 +138,12 @@ window.Temperature = Temperature;
 window.temps = temps;
 window.t = t;
 
-render(
-  <Provider temperatures={temps}>
-    <App />
-  </Provider>,
-  document.getElementById("root")
-);
+// ReactDOM.render(
+//   <Provider temperatures={temps}>
+//     <App />
+//   </Provider>,
+//   document.getElementById("root")
+// );
 
 function isNice(t) {
   return t.temperatureCelsius > 500;
@@ -153,7 +153,7 @@ when(
   () => temps.some(isNice),
   () => {
     const t = temps.find(isNice);
-    alert("Book now!" + t.location);
+    console.info("Book now!" + t.location);
   }
 );
 // transaction(() => {
@@ -163,3 +163,26 @@ when(
 
 // t.unit = "F";
 // t.unit = "C";
+
+function render(temperatures) {
+  return `
+    <ul>
+      ${temperatures
+        .map(
+          t =>
+            `<li>
+          ${t.location}:
+          ${t.loading ? "loading" : t.temperature}
+        </li>`
+        )
+        .join("")}
+    </ul>
+  `;
+}
+
+temps.push(new Temperature("AAAA"));
+temps.push(new Temperature("BBBB"));
+
+autorun(() => {
+  document.getElementById("root").innerHTML = render(temps);
+});
