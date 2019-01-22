@@ -64,13 +64,23 @@ temps.push(t);
 temps.push(t1);
 temps.push(t2);
 
+@observer
+class TView extends React.Component {
+  render() {
+    const t = this.props.termperature;
+    return (
+      <li key={t.id} onClick={() => t.inc()}>
+        {t.temperature}
+      </li>
+    );
+  }
+}
+
 const App = observer(({ temperatures }) => (
   <div>
     <ul>
       {temps.map(t => (
-        <li key={Math.random()} onClick={() => t.inc()}>
-          {t.temperature}
-        </li>
+        <TView key={t.id} termperature={t} />
       ))}
     </ul>
     <Devtools />
